@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
 
 export default function App() {
-  const [tulos, setTulos] = useState('');
   const [result, setResult] = useState('');
   const [operand1, setOperand1] = useState('');
   const [operand2, setOperand2] = useState('');
@@ -13,16 +12,24 @@ export default function App() {
   const laske = operator => {
     console.log(operand1, operand2, operator);
     const [number1, number2] = [Number(operand1), Number(operand2)];
-    switch (operator) {
-      case '+':
-        setResult(number1 + number2);
-        break;
-      case '-':
-        setResult(number1 - number2);
-        break;
-    }
-    setData([...data, { key: tulos }]);
-    setTulos(number1 + operator + number2 + ' = ' + result);
+    
+    if (isNaN(number1) || isNaN(number2)) {
+      setResult(0);
+    } else {
+      let result = 0;
+      switch (operator) {
+        case '+':
+         result = number1 + number2;
+          break;
+        case '-':
+          result = number1 - number2;
+          break;
+      }
+    setResult(result);
+
+    const text = `${number1} ${operator} ${number2} = ${result}`;
+    setData([...data, text]);
+  }
     setOperand1('');
     setOperand2('');
     initialFocus.current.focus();
@@ -53,9 +60,14 @@ export default function App() {
       
       </View>
       <Text>History</Text>
-          <FlatList style={styles.list}
+          <FlatList
           data={data} 
-          renderItem={({item}) => <Text>{item.key}</Text>} /> 
+          keyExtractor={(item, index) => index}
+          renderItem={({item}) => {
+          return <Text>{item}</Text>
+          } 
+          }
+          /> 
     </View>
     
   );
